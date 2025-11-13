@@ -1,0 +1,29 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'telemetry-monitor'
+
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Scrape the Telemetry Service
+  - job_name: 'telemetry-service'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['telemetry-service:8080']
+        labels:
+          service: 'telemetry-service'
+          environment: 'production'
+
+  # You can add your other microservices here
+  # - job_name: 'your-service-name'
+  #   scrape_interval: 10s
+  #   static_configs:
+  #     - targets: ['your-service:port']
+  #       labels:
+  #         service: 'your-service-name'
+  #         environment: 'production'
