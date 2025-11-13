@@ -1,0 +1,22 @@
+server:
+  port: 8080
+  host: "0.0.0.0"
+
+logger:
+  level: "info"  # debug, info, warn, error
+  encoding: "json"  # json or console
+  output_paths:
+    - "stdout"
+    - "logs/telemetry.log"
+  error_output_paths:
+    - "stderr"
+    - "logs/telemetry-error.log"
+
+prometheus:
+  enabled: true
+  port: 9090
+  path: "/metrics"
+
+grafana:
+  enabled: true
+  port: 3000

@@ -1,0 +1,71 @@
+app:
+  name: "Hackathon Template"
+  version: "1.0.0"
+  description: "A simple API for Hackathon Template"
+  env: "development" # development | production
+  debug: true
+  timezone: "UTC"
+  url: "http://localhost:8080"
+  frontend_url: "http://localhost:3001"
+  assets_url: "https://cdn-hackathon-template.b-cdn.net"
+  host: "localhost"
+  port: 8080
+
+  maintenance:
+    enabled: false
+    message: "Under Maintenance"
+    driver: "file" # file | redis
+
+database:
+  default: "postgres" # mysql | postgres
+  postgres:
+    driver: "postgres"
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: ""
+    name: "microservice-template/user-service"
+    migration_path: "migrations/"
+    pool:
+      max_idle_connections: 10
+      max_open_connections: 100
+      max_connection_lifetime: 30s
+
+redis:
+  addr: "localhost:6379"
+  username: ""
+  default: "localhost:6379"
+  password: ""
+  db: 0
+
+log:
+  level: "warn" # debug | info | warn | error | fatal
+  format: "text" # text | json
+  time_encoding: "iso8601"
+  disable_timestamp: false
+  disable_caller: true
+  disable_stacktrace: true
+  file:
+    path: "storage/logs/app.log"
+    max_size: 300
+    max_days: 7
+    max_backups: 10
+    compress: true
+    localtime: true
+  sampling:
+    enabled: false
+    initial: 0
+    thereafter: 0
+    tick: 0s
+
+auth:
+  jwt:
+    algorithm: "RS256"
+    public_key: "storage/cert/oauth-public.key"
+    private_key: "storage/cert/oauth-private.key"
+    access_token_expires_in: 3600s # 1h
+    refresh_token_expires_in: 604800s # 7d
+  otp:
+    expires_in: 300s
+    secret: ""
+    length: 6
