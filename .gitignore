@@ -2,7 +2,6 @@ logs/*
 !.gitkeep
 tmp/*
 .DS_Store
-.env
 .vscode/
 node_modules/
 .idea/
