@@ -47,27 +47,27 @@ jobs:
             # Extract deployment package
             tar -xzf deploy.tar.gz
             
-            # Stop existing containers
-            docker-compose down || true
+            # Stop existing containers (try both docker-compose and docker compose)
+            sudo docker compose down 2>/dev/null || sudo docker-compose down 2>/dev/null || true
             
             # Pull latest images or build them
-            docker-compose pull || true
+            sudo docker compose pull 2>/dev/null || sudo docker-compose pull 2>/dev/null || true
             
             # Remove old images to free up space
-            docker image prune -af || true
+            sudo docker image prune -af || true
             
-            # Start services in detached mode
-            docker-compose up -d --build
+            # Start services in detached mode (try docker compose V2 first, fallback to V1)
+            sudo docker compose up -d --build 2>/dev/null || sudo docker-compose up -d --build
             
             # Wait for services to be healthy
             echo "Waiting for services to start..."
-            sleep 10
+            sleep 15
             
             # Check service status
-            docker-compose ps
+            sudo docker compose ps 2>/dev/null || sudo docker-compose ps
             
             # Show logs for verification
-            docker-compose logs --tail=50
+            sudo docker compose logs --tail=50 2>/dev/null || sudo docker-compose logs --tail=50
 
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.3
@@ -83,6 +83,6 @@ jobs:
             curl -f http://localhost:8080/health || echo "API Gateway health check failed"
             
             # List running containers
-            docker-compose ps
+            sudo docker compose ps 2>/dev/null || sudo docker-compose ps
             
             echo "Deployment completed successfully!"
