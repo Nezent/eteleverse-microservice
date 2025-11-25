@@ -44,30 +44,61 @@ jobs:
           script: |
             cd /home/${{ secrets.USERNAME }}/microservices
             
+            # Debug: Show current directory and files
+            echo "📂 Current directory: $(pwd)"
+            echo "📄 Files in directory:"
+            ls -la
+            
             # Extract deployment package
+            echo "📦 Extracting deployment package..."
             tar -xzf deploy.tar.gz
             
+            # Copy files from deploy directory to current directory
+            echo "📋 Copying deployment files..."
+            cp -r deploy/* .
+            
+            # Debug: Check if docker-compose.yml exists
+            if [ -f docker-compose.yml ]; then
+              echo "✅ docker-compose.yml found"
+            else
+              echo "❌ docker-compose.yml NOT found!"
+              exit 1
+            fi
+            
             # Stop existing containers (try both docker-compose and docker compose)
+            echo "🛑 Stopping existing containers..."
             sudo docker compose down 2>/dev/null || sudo docker-compose down 2>/dev/null || true
             
             # Pull latest images or build them
+            echo "🔄 Pulling images..."
             sudo docker compose pull 2>/dev/null || sudo docker-compose pull 2>/dev/null || true
             
             # Remove old images to free up space
+            echo "🧹 Cleaning up old images..."
             sudo docker image prune -af || true
             
             # Start services in detached mode (try docker compose V2 first, fallback to V1)
-            sudo docker compose up -d --build 2>/dev/null || sudo docker-compose up -d --build
+            echo "🚀 Starting services..."
+            if sudo docker compose up -d --build 2>&1; then
+              echo "✅ Started with 'docker compose'"
+            elif sudo docker-compose up -d --build 2>&1; then
+              echo "✅ Started with 'docker-compose'"
+            else
+              echo "❌ Failed to start services"
+              exit 1
+            fi
             
             # Wait for services to be healthy
-            echo "Waiting for services to start..."
+            echo "⏳ Waiting for services to start..."
             sleep 15
             
             # Check service status
+            echo "📊 Service status:"
             sudo docker compose ps 2>/dev/null || sudo docker-compose ps
             
             # Show logs for verification
-            sudo docker compose logs --tail=50 2>/dev/null || sudo docker-compose logs --tail=50
+            echo "📝 Recent logs:"
+            sudo docker compose logs --tail=30 2>/dev/null || sudo docker-compose logs --tail=30
 
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.3
