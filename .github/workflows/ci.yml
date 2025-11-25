@@ -20,7 +20,10 @@ jobs:
           cp docker-compose.yml deploy/
           cp -r nginx deploy/
           cp -r docker deploy/
-          cp -r telemetry-service/docker deploy/telemetry-docker
+          # Copy all service directories with their Dockerfiles
+          cp -r telemetry-service deploy/
+          cp -r user-service deploy/
+          cp -r order-service deploy/
           tar -czf deploy.tar.gz deploy/
 
       - name: Copy files to Azure VM
@@ -30,7 +33,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           port: 22
-          source: "deploy.tar.gz,docker-compose.yml,.env,user-service/.env,order-service/.env,telemetry-service/config/config.yaml"
+          source: "deploy.tar.gz"
           target: "/home/${{ secrets.USERNAME }}/microservices"
           strip_components: 0
 
